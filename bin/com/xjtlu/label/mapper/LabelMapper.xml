@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xjtlu.label.dao.LabelDao">
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap" type="com.xjtlu.label.entity.Label">
+		<result column="id" property="id" />
+		<result column="labelName" property="labelName" />
+		<result column="shopID" property="shopID" />
+		<result column="createTime" property="createTime" />
+		<result column="createBy" property="createBy" />
+		<result column="updateTime" property="updateTime" />
+		<result column="updateBy" property="updateBy" />
+		<result column="state" property="state" />
+	</resultMap>
+
+	<!-- label table all fields -->
+	<sql id="Base_Column_List">
+		id,labelName,shopID,createTime,createBy,updateTime,updateBy,state
+	</sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		where 1=1
+		<trim suffixOverrides=",">
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="labelName != null and labelName != ''">
+				and labelName = #{labelName}
+			</if>
+			<if test="shopID != null and shopID != ''">
+				and shopID = #{shopID}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				and createTime = #{createTime}
+			</if>
+			<if test="createBy != null and createBy != ''">
+				and createBy = #{createBy}
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				and updateTime = #{updateTime}
+			</if>
+			<if test="updateBy != null and updateBy != ''">
+				and updateBy = #{updateBy}
+			</if>
+			<if test="state != null and state != ''">
+				and state = #{state}
+			</if>
+		</trim>
+	</sql>
+
+
+	<!-- 插入记录 -->
+	<insert id="add" parameterType="Object">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into
+		label(id,labelName,shopID,createTime,createBy,updateTime,updateBy,state)
+		values(#{id},#{labelName},#{shopID},#{createTime},#{createBy},#{updateTime},#{updateBy},
+		<choose>
+			<when test="state != null and state != ''">#{state}</when>
+			<otherwise>1</otherwise>
+		</choose>
+		)
+	</insert>
+
+	<!-- 根据id，修改记录 -->
+	<update id="updateBySelective" parameterType="Object">
+		update label set
+		labelName=#{labelName},shopID=#{shopID},createBy=#{createBy},updateTime=now(),updateBy=#{updateBy},state=#{state}
+		where id=#{id}
+	</update>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="update" parameterType="Object">
+		update label set
+		<trim suffixOverrides=",">
+			<if test="labelName != null  ">
+				labelName=#{labelName},
+			</if>
+			<if test="shopID != null  ">
+				shopID=#{shopID},
+			</if>
+			<if test="createTime != null  ">
+				createTime=#{createTime},
+			</if>
+			<if test="createBy != null  ">
+				createBy=#{createBy},
+			</if>
+			<if test="updateTime != null  ">
+				updateTime=#{updateTime},
+			</if>
+			<if test="updateBy != null  ">
+				updateBy=#{updateBy},
+			</if>
+			<if test="state != null  ">
+				state=#{state},
+			</if>
+		</trim>
+		where id=#{id}
+	</update>
+
+	<!-- 删除记录 -->
+	<delete id="delete" parameterType="Object">
+		update label set state = 0
+		where id = #{id}
+	</delete>
+
+	<!-- 根据id查询 标签表 -->
+	<select id="queryById" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from label where id = #{id}
+	</select>
+
+	<!-- 标签表 列表总数 -->
+	<select id="queryByCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1) from label
+		<include refid="Example_Where_Clause" />
+	</select>
+
+	<!-- 查询标签表列表 -->
+	<select id="queryByList" resultMap="BaseResultMap"
+		parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from label
+		<include refid="Example_Where_Clause" />
+		<if test="pager.orderCondition != null and pager.orderCondition != ''">
+			${pager.orderCondition}
+		</if>
+		<if
+			test="pager.mysqlQueryCondition != null and pager.mysqlQueryCondition != ''">
+			${pager.mysqlQueryCondition}
+		</if>
+	</select>
+	<select id="queryOne" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="Base_Column_List" />
+		from label
+		<include refid="Example_Where_Clause" />
+	</select>
+
+</mapper>   
